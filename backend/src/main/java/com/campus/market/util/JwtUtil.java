@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * JWT 生成与解析。
+ * JWT 生成与解析，token 中携带用户名与角色。
  */
 @Component
 public class JwtUtil {
@@ -29,9 +29,10 @@ public class JwtUtil {
         this.expireMillis = expireHours * 60 * 60 * 1000;
     }
 
-    public String generate(Long userId, String username) {
+    public String generate(Long userId, String username, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", username);
+        claims.put("role", role);
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)

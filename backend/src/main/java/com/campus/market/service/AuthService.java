@@ -38,7 +38,7 @@ public class AuthService {
         user.setCreatedAt(LocalDateTime.now());
         userMapper.insert(user);
 
-        return new AuthVO(jwtUtil.generate(user.getId(), user.getUsername()), UserService.toVO(user));
+        return new AuthVO(jwtUtil.generate(user.getId(), user.getUsername(), user.getRole()), UserService.toVO(user));
     }
 
     public AuthVO login(LoginRequest req) {
@@ -47,6 +47,6 @@ public class AuthService {
         if (user == null || !PasswordUtil.matches(req.getPassword(), user.getPassword())) {
             throw new BizException(401, "用户名或密码不正确");
         }
-        return new AuthVO(jwtUtil.generate(user.getId(), user.getUsername()), UserService.toVO(user));
+        return new AuthVO(jwtUtil.generate(user.getId(), user.getUsername(), user.getRole()), UserService.toVO(user));
     }
 }

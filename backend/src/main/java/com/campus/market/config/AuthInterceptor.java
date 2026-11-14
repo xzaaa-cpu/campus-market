@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 登录拦截器：有 token 就解析出当前用户，标记 @RequireLogin 的接口强制校验。
+ * 登录拦截器：有 token 就解析出当前用户，标记 @RequireLogin / @RequireAdmin 的接口强制校验。
  */
 @Component
 @RequiredArgsConstructor
@@ -26,7 +26,9 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (header != null && header.startsWith("Bearer ")) {
             try {
                 Claims claims = jwtUtil.parse(header.substring(7));
-                CurrentUser.set(Long.valueOf(claims.getSubject()), claims.get("username", String.class));
+                CurrentUser.set(Long.valueOf(claims.getSubject()),
+                        claims.get("username", String.class),
+                        claims.get("role", String.class));
             } catch (Exception ignored) {
                 // token 失效按未登录处理
             }
@@ -36,8 +38,14 @@ public class AuthInterceptor implements HandlerInterceptor {
             HandlerMethod method = (HandlerMethod) handler;
             boolean needLogin = method.hasMethodAnnotation(RequireLogin.class)
                     || method.getBeanType().isAnnotationPresent(RequireLogin.class);
-            if (needLogin && CurrentUser.getUserId() == null) {
+            boolean needAdmin = method.hasMethodAnnotation(RequireAdmin.class)
+                    || method.getBeanType().isAnnotationPresent(RequireAdmin.class);
+
+            if ((needLogin || needAdmin) && CurrentUser.getUserId() == null) {
                 throw new BizException(401, "请先登录");
+            }
+            if (needAdmin && !"ADMIN".equals(CurrentUser.getRole())) {
+                throw new BizException(403, "无权访问，仅管理员可操作");
             }
         }
         return true;
