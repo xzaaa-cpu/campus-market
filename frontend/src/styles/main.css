@@ -1,0 +1,130 @@
+:root {
+  --brand: #ff6b35;
+  --brand-dark: #e8551f;
+  --brand-soft: #fff1e9;
+  --ink: #22242a;
+  --ink-2: #5b6070;
+  --ink-3: #8f95a3;
+  --line: #eceef2;
+  --bg: #fdf9f6;
+  --teal: #14b8a6;
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(34, 36, 42, 0.07);
+  --shadow-hover: 0 16px 40px rgba(34, 36, 42, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.price {
+  color: var(--brand);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.price-symbol {
+  font-size: 0.72em;
+  margin-right: 1px;
+}
+
+.muted {
+  color: var(--ink-3);
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ellipsis-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 34px 0 16px;
+}
+
+.section-head h2 {
+  font-size: 20px;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.section-head span {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--brand);
+  --el-button-border-color: var(--brand);
+  --el-button-hover-bg-color: var(--brand-dark);
+  --el-button-hover-border-color: var(--brand-dark);
+  --el-button-active-bg-color: var(--brand-dark);
+  --el-button-active-border-color: var(--brand-dark);
+}
+
+.el-tabs__item.is-active,
+.el-tabs__item:hover {
+  color: var(--brand) !important;
+}
+
+.el-tabs__active-bar {
+  background-color: var(--brand) !important;
+}
+
+.el-pagination.is-background .el-pager li.is-active {
+  background-color: var(--brand) !important;
+}
