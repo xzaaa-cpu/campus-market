@@ -34,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
         initCategories();
         initUsers();
         initItems();
-        log.info("演示数据初始化完成：演示账号 demo / 123456");
+        log.info("演示数据初始化完成：演示账号 demo / 123456，管理员 admin / 123456");
     }
 
     private void initCategories() {
@@ -65,6 +65,12 @@ public class DataInitializer implements CommandLineRunner {
                     u[0], PasswordUtil.encode("123456"), u[1], u[2], "USER",
                     Timestamp.valueOf(LocalDateTime.now().minusDays(30)));
         }
+
+        // 管理员账号（id 排在 4 位普通用户之后，不影响下面商品关联的 sellerId）
+        jdbcTemplate.update(
+                "INSERT INTO t_user (username, password, nickname, intro, role, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                "admin", PasswordUtil.encode("123456"), "平台管理员", "负责审核商品、处理违规与维护分类。", "ADMIN",
+                Timestamp.valueOf(LocalDateTime.now().minusDays(60)));
     }
 
     private void initItems() {
@@ -86,7 +92,7 @@ public class DataInitializer implements CommandLineRunner {
                         "只穿过两次，洗过一次，无起球。身高 170-180 都能穿，偏宽松。",
                         "45", "199", 5L, 3L, "几乎全新", "嘉庚学院 · 女生宿舍楼", 5, 41},
                 {"罗技 G304 无线游戏鼠标",
-                        "换新鼠标了所以出，键程正常，微动无双击，含 USB 无线接收器。",
+                        "换新鼠标了所以出，键曼正常，微动无双击，含 USB 无线接收器。",
                         "130", "199", 1L, 4L, "几乎全新", "嘉庚学院 · 教学楼 B 区", 6, 96},
                 {"小米台灯 Pro 护眼款",
                         "宿舍用了一个学期，无频闪，可调色温。搬回家了所以出掉。",
@@ -94,7 +100,7 @@ public class DataInitializer implements CommandLineRunner {
                 {"《高等数学》同济第八版 上下册",
                         "全新未拆封，买重复了。两本一起出，不单卖。",
                         "25", "78", 2L, 4L, "全新", "嘉庚学院 · 快递站", 8, 27},
-                {"迪卡侬瑜伽垫 183×61cm 加厚",
+                {"迪卡依瑜伽垫 183×61cm 加厚",
                         "买来练了几次，已擦洗消毒，配收纳绑带。",
                         "40", "79", 4L, 3L, "几乎全新", "嘉庚学院 · 操场", 9, 18},
                 {"负离子电吹风 大风量",
