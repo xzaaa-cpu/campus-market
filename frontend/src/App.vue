@@ -39,6 +39,7 @@ function go(path) {
         <span class="nav-item" @click="go('/')">首页</span>
         <span class="nav-item" @click="go('/publish')">发布闲置</span>
         <span class="nav-item" @click="go('/mine')">我的</span>
+        <span v-if="userStore.isAdmin" class="nav-item admin-entry" @click="go('/admin')">管理后台</span>
       </nav>
 
       <div class="header-right">
@@ -128,6 +129,11 @@ function go(path) {
   padding: 6px 2px;
   border-bottom: 2px solid transparent;
   transition: all 0.2s;
+}
+
+.admin-entry {
+  color: var(--brand);
+  font-weight: 600;
 }
 
 .nav-item:hover {

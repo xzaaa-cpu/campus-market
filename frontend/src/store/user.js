@@ -9,7 +9,8 @@ export const useUserStore = defineStore('user', {
   getters: {
     isLogin: (state) => Boolean(state.token),
     userId: (state) => state.user?.id || null,
-    displayName: (state) => state.user?.nickname || state.user?.username || '未登录'
+    displayName: (state) => state.user?.nickname || state.user?.username || '未登录',
+    isAdmin: (state) => state.user?.role === 'ADMIN'
   },
   actions: {
     setAuth(payload) {

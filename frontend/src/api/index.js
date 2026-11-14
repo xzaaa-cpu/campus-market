@@ -40,3 +40,16 @@ export const favoriteApi = {
 export const statsApi = {
   summary: () => http.get('/stats/summary')
 }
+
+export const adminApi = {
+  summary: () => http.get('/admin/summary'),
+  users: (params) => http.get('/admin/users', { params }),
+  updateRole: (id, role) => http.put(`/admin/users/${id}/role`, { role }),
+  items: (params) => http.get('/admin/items', { params }),
+  changeItemStatus: (id, status) => http.post(`/admin/items/${id}/status`, { status }),
+  orders: (params) => http.get('/admin/orders', { params }),
+  categories: () => http.get('/admin/categories'),
+  createCategory: (data) => http.post('/admin/categories', data),
+  updateCategory: (id, data) => http.put(`/admin/categories/${id}`, data),
+  deleteCategory: (id) => http.delete(`/admin/categories/${id}`)
+}

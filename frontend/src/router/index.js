@@ -7,6 +7,7 @@ const routes = [
   { path: '/login', name: 'login', component: () => import('../views/LoginView.vue'), meta: { title: '登录' } },
   { path: '/register', name: 'register', component: () => import('../views/RegisterView.vue'), meta: { title: '注册' } },
   { path: '/mine', name: 'mine', component: () => import('../views/MineView.vue'), meta: { title: '个人中心', auth: true } },
+  { path: '/admin', name: 'admin', component: () => import('../views/AdminView.vue'), meta: { title: '管理后台', auth: true, admin: true } },
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 
@@ -20,6 +21,12 @@ router.beforeEach((to) => {
   const token = localStorage.getItem('cm_token')
   if (to.meta?.auth && !token) {
     return { name: 'login', query: { redirect: to.fullPath } }
+  }
+  if (to.meta?.admin) {
+    const user = JSON.parse(localStorage.getItem('cm_user') || 'null')
+    if (!user || user.role !== 'ADMIN') {
+      return { path: '/' }
+    }
   }
   document.title = to.meta?.title ? `${to.meta.title} · 校园集市` : '校园集市'
   return true
