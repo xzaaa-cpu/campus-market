@@ -28,4 +28,11 @@ public interface ItemMapper extends BaseMapper<Item> {
      * 我发布的商品（可按状态筛选）。
      */
     List<ItemVO> selectMyItems(@Param("sellerId") Long sellerId, @Param("status") Integer status);
+
+    /**
+     * 管理后台商品分页（不限制状态，可按关键词与状态筛选）。
+     */
+    IPage<ItemVO> selectAdminItemPage(Page<ItemVO> page,
+                                      @Param("keyword") String keyword,
+                                      @Param("status") Integer status);
 }

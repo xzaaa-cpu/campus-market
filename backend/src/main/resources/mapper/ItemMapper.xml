@@ -64,4 +64,19 @@
         </if>
         ORDER BY i.created_at DESC
     </select>
+
+    <select id="selectAdminItemPage" resultType="com.campus.market.vo.ItemVO">
+        SELECT
+        <include refid="itemColumns"/>
+        FROM t_item i
+        LEFT JOIN t_category c ON c.id = i.category_id
+        LEFT JOIN t_user u ON u.id = i.seller_id
+        <where>
+            <if test="status != null">AND i.status = #{status}</if>
+            <if test="keyword != null and keyword != ''">
+                AND (i.title LIKE CONCAT('%', #{keyword}, '%') OR u.nickname LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY i.created_at DESC
+    </select>
 </mapper>
