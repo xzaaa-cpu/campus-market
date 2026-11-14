@@ -16,7 +16,8 @@
 | 交易 | 下单、取消订单、确认收货、我买到的 / 我卖出的 |
 | 收藏 | 收藏 / 取消收藏、收藏列表 |
 | 首页 | 数据概览（在售数 / 用户数 / 成交数）、分类导航 |
-| 工程化 | 统一响应体、全局异常处理、参数校验、登录拦截器、事务控制、演示数据自动初始化 |
+| 管理后台 | 数据看板（用户 / 商品 / 订单 / GMV / 最近 7 天趋势）、用户与角色管理、商品强审下架、全站订单、分类增删改 |
+| 工程化 | 统一响应体、全局异常处理、参数校验、登录拦截器、角色权限校验、事务控制、演示数据自动初始化 |
 
 ## 🧱 技术栈
 
@@ -34,7 +35,7 @@ campus-market
 │       ├── java/com/campus/market
 │       │   ├── common        # 统一响应 Result / 分页 PageResult / 业务异常 / 全局异常处理
 │       │   ├── config        # 跨域、登录拦截器、MyBatis-Plus、Jackson、演示数据初始化
-│       │   ├── controller    # 7 个 REST 控制器
+│       │   ├── controller    # 8 个 REST 控制器（含管理后台）
 │       │   ├── dto / vo      # 入参与出参对象
 │       │   ├── entity        # 5 张表实体
 │       │   ├── mapper        # BaseMapper + 联表查询
@@ -53,7 +54,7 @@ campus-market
         ├── router           # 路由与登录守卫
         ├── store            # Pinia 用户状态
         ├── styles
-        └── views            # 首页 / 详情 / 发布 / 登录 / 注册 / 个人中心
+        └── views            # 首页 / 详情 / 发布 / 登录 / 注册 / 个人中心 / 管理后台
 ```
 
 ## 🚀 快速启动
@@ -89,8 +90,9 @@ npm run dev
 | --- | --- | --- |
 | `demo` | `123456` | 主演示账号，名下有 3 件在售闲置 |
 | `linxm` / `zhouza` / `suqing` | `123456` | 其他卖家账号，可用来测试「下单 → 确认收货」全流程 |
+| `admin` | `123456` | **管理员账号**，登录后顶栏出现「管理后台」入口 |
 
-首次启动会自动写入 6 个分类、4 位用户、12 件商品。
+首次启动会自动写入 6 个分类、5 位用户（含 1 位管理员）、12 件商品。
 
 ## 🔌 接口一览
 
@@ -125,6 +127,21 @@ npm run dev
 | DELETE | `/api/favorites/{itemId}` | 取消收藏 | 是 |
 | GET | `/api/stats/summary` | 首页数据概览 | 否 |
 
+管理后台接口（统一前缀 `/api/admin`，后端 `@RequireAdmin` 校验角色）：
+
+| 方法 | 路径 | 说明 | 权限 |
+| --- | --- | --- | --- |
+| GET | `/api/admin/summary` | 数据概览：用户 / 商品 / 订单 / GMV / 最近 7 天趋势 | 管理员 |
+| GET | `/api/admin/users` | 用户分页（`keyword` / `role` / `page` / `size`） | 管理员 |
+| PUT | `/api/admin/users/{id}/role` | 调整角色（body：`{ "role": "ADMIN" }`），不能改自己 | 管理员 |
+| GET | `/api/admin/items` | 全站商品分页（`keyword` / `status` / `page` / `size`） | 管理员 |
+| POST | `/api/admin/items/{id}/status` | 强制上架（`{"status":1}`）或下架（`{"status":4}`） | 管理员 |
+| GET | `/api/admin/orders` | 全站订单分页（可按 `status` 过滤） | 管理员 |
+| GET | `/api/admin/categories` | 分类列表 | 管理员 |
+| POST | `/api/admin/categories` | 新增分类（body：`{ "name": "乐器", "icon": "🎸", "sort": 7 }`） | 管理员 |
+| PUT | `/api/admin/categories/{id}` | 编辑分类 | 管理员 |
+| DELETE | `/api/admin/categories/{id}` | 删除分类，分类下还有商品时拒绝 | 管理员 |
+
 > 需要登录的接口请携带请求头 `Authorization: Bearer <token>`。
 
 ## 🗃️ 数据模型
@@ -147,11 +164,31 @@ t_favorite(id, user_id, item_id, created_at)
 3. 买家在「我的 - 我买到的」点击「确认收货」→ 订单完成，商品变为「已售出」；
 4. 任意一方可在完成前取消订单 → 订单关闭，商品回到「在售」。
 
+## 🛡 管理员后台
+
+登录管理员账号后，顶栏出现「管理后台」入口，页面地址 `/admin`，五个模块：
+
+| 模块 | 能做什么 |
+| --- | --- |
+| 数据概览 | 用户数 / 商品数 / 在售 / 已下架 / 订单数 / 成交总额 GMV，以及最近 7 天新增商品与成交订单柱状图 |
+| 用户与权限 | 关键词、角色筛选，一键把普通用户设为管理员或降级；管理员不能修改自己的角色 |
+| 商品审核 | 按关键词、状态检索全站商品，对在售商品强制下架、对下架商品恢复上架（交易中 / 已售出不允许改状态） |
+| 全站订单 | 按状态查看所有订单，含订单号、商品、金额、买卖双方 |
+| 分类管理 | 新增、编辑、删除分类；分类下还有商品时拒绝删除 |
+
+权限模型：
+
+1. 用户表已有 `role` 字段（`USER` / `ADMIN`），登录签发的 JWT 中携带 `role`；
+2. 拦截器解析 token 后写入 `CurrentUser`，标注 `@RequireAdmin` 的接口在角色不符时返回 `403`；
+3. 前端路由 `/admin` 带 `admin` 守卫，非管理员访问会被重定向回首页；
+4. 管理员入口只在 `role === 'ADMIN'` 时出现在顶栏。
+
 ## 🛠 二次开发提示
 
 - 换成 MySQL：改 `application.yml` 的 `spring.datasource`，把 `schema.sql` 中 `CLOB` 换成 `TEXT`、`TINYINT` 保持，再补上 `utf8mb4` 字符集即可；
 - 生产环境请替换 `app.jwt.secret`，并把密码盐、图片上传（OSS / 本地存储）接进来；
-- 想加聊天、评价、举报、管理员后台，可直接在 `controller / service` 层扩展，前端按现有 `views` 结构加页面即可。
+- 想加聊天、评价、举报处理，可直接在 `controller / service` 层扩展，前端按现有 `views` 结构加页面即可；
+- 管理员后台已内置角色体系，新增后台能力时，只需在 `AdminController` 加接口并在 `AdminView.vue` 左侧菜单加一项。
 
 ## 📄 License
 
