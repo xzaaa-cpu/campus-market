@@ -1,0 +1,32 @@
+# ---- Java / Maven ----
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+
+# ---- H2 database ----
+data/
+*.db
+*.trace.db
+
+# ---- Node / Vite ----
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+
+# ---- IDE ----
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# ---- OS / logs ----
+.DS_Store
+Thumbs.db
+*.log
+logs/
