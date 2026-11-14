@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campus.market.mapper.OrderMapper">
+
+    <select id="selectOrderList" resultType="com.campus.market.vo.OrderVO">
+        SELECT
+            o.id,
+            o.order_no,
+            o.amount,
+            o.status,
+            o.created_at,
+            o.finished_at,
+            i.id AS item_id,
+            i.title AS item_title,
+            i.image_url AS item_image,
+            i.price AS item_price,
+            o.buyer_id,
+            bu.nickname AS buyer_nickname,
+            o.seller_id,
+            su.nickname AS seller_nickname
+        FROM t_order o
+        JOIN t_item i ON i.id = o.item_id
+        JOIN t_user bu ON bu.id = o.buyer_id
+        JOIN t_user su ON su.id = o.seller_id
+        <where>
+            <if test="role == 'bought'">o.buyer_id = #{userId}</if>
+            <if test="role != 'bought'">o.seller_id = #{userId}</if>
+        </where>
+        ORDER BY o.created_at DESC
+    </select>
+</mapper>

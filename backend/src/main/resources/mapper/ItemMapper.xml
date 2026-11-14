@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.campus.market.mapper.ItemMapper">
+
+    <sql id="itemColumns">
+        i.id,
+        i.title,
+        i.description,
+        i.price,
+        i.original_price,
+        i.category_id,
+        c.name AS category_name,
+        c.icon AS category_icon,
+        i.seller_id,
+        u.nickname AS seller_nickname,
+        u.avatar AS seller_avatar,
+        i.image_url,
+        i.item_condition,
+        i.location,
+        i.status,
+        i.view_count,
+        i.created_at
+    </sql>
+
+    <select id="selectItemPage" resultType="com.campus.market.vo.ItemVO">
+        SELECT
+        <include refid="itemColumns"/>
+        FROM t_item i
+        LEFT JOIN t_category c ON c.id = i.category_id
+        LEFT JOIN t_user u ON u.id = i.seller_id
+        WHERE i.status = 1
+        <if test="q.keyword != null and q.keyword != ''">
+            AND (i.title LIKE CONCAT('%', #{q.keyword}, '%') OR i.description LIKE CONCAT('%', #{q.keyword}, '%'))
+        </if>
+        <if test="q.categoryId != null">
+            AND i.category_id = #{q.categoryId}
+        </if>
+        <choose>
+            <when test="q.sort == 'priceAsc'">ORDER BY i.price ASC</when>
+            <when test="q.sort == 'priceDesc'">ORDER BY i.price DESC</when>
+            <when test="q.sort == 'popular'">ORDER BY i.view_count DESC</when>
+            <otherwise>ORDER BY i.created_at DESC</otherwise>
+        </choose>
+    </select>
+
+    <select id="selectItemDetail" resultType="com.campus.market.vo.ItemVO">
+        SELECT
+        <include refid="itemColumns"/>
+        FROM t_item i
+        LEFT JOIN t_category c ON c.id = i.category_id
+        LEFT JOIN t_user u ON u.id = i.seller_id
+        WHERE i.id = #{id}
+    </select>
+
+    <select id="selectMyItems" resultType="com.campus.market.vo.ItemVO">
+        SELECT
+        <include refid="itemColumns"/>
+        FROM t_item i
+        LEFT JOIN t_category c ON c.id = i.category_id
+        LEFT JOIN t_user u ON u.id = i.seller_id
+        WHERE i.seller_id = #{sellerId}
+        <if test="status != null">
+            AND i.status = #{status}
+        </if>
+        ORDER BY i.created_at DESC
+    </select>
+</mapper>

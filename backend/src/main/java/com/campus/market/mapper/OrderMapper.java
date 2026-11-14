@@ -1,0 +1,18 @@
+package com.campus.market.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.campus.market.entity.TradeOrder;
+import com.campus.market.vo.OrderVO;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+@Mapper
+public interface OrderMapper extends BaseMapper<TradeOrder> {
+
+    /**
+     * 我的订单列表。role：bought=我买到的，sold=我卖出的。
+     */
+    List<OrderVO> selectOrderList(@Param("userId") Long userId, @Param("role") String role);
+}
