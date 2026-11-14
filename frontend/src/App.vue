@@ -63,6 +63,8 @@ function go(path) {
       </div>
     </div>
   </header>
+
+  <router-view />
 </template>
 
 <style scoped>
